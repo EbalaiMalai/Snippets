@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if errors %}
+    <ul>
+        {% for error in errors %}
+            <li>{{error}}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<form method="post" action="/auth/">{% csrf_token %}
+    <label for="username">username: </label>
+    {% if username %}
+    <input style="color: red;" name="username" value="{{username}}"  type="text"><br>
+    {% else %}
+    <input name="username" value="{{username}}"  type="text"><br>
+    {% endif %}
+    
+    <label for="password">password: </label>
+    <input name="password"  type="password"><br>
+    <button type="submit">login</button>
+</form>
+
+{% endblock %}

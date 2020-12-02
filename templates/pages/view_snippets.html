@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col">
+        <p>На данной странице отображаются все сниппеты.</p>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        Список сниппетов:
+        <div class="col">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Дата создания</th>
+                    <th scope="col">Создатель</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for snippet in snippets %}        
+                <tr>
+                    <td scope="row">{{ snippet.id }}</td>
+                    <td><a href="{% url 'snippet' snippet_id=snippet.id %}">{{ snippet.name }}</a></td>
+                    <td>{{ snippet.creation_date|date:"M d, Y" }}</td>
+                    <td>{{ snippet.user.username }}</td>
+                </tr>
+                {% endfor %}               
+        
+                </tbody>
+            </table>
+            <div align="right">
+                <i style="color: gray;">Всего сниппетов: {{snippets.count}}</i>
+            </div>
+        </div>
+ 
+    </div>
+</div>
+{% endblock %}
