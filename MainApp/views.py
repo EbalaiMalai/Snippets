@@ -1,7 +1,7 @@
 from django.http import Http404
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
 from MainApp.models import Snippet
-from MainApp.forms import SnippetForm
+from MainApp.forms import SnippetForm, CommentForm
 from django.contrib import auth
 
 
@@ -39,6 +39,15 @@ def add_snippet_page(request):
         return render(request, 'pages/add_snippet.html', context)
 
 
+def snippet_delete(request, snippet_id):
+    try:
+        snippet = Snippet.objects.get(id=snippet_id)
+    except Snippet.DoesNotExist:
+        raise  Http404
+
+    snippet.delete()
+    return redirect('snippet_list')
+
 
 def snippets_page(request):
     context = get_base_context(request, 'Просмотр сниппетов')
@@ -51,10 +60,14 @@ def snippet(request, snippet_id):
     context = get_base_context(request, 'Страница сниппета')
     try:
         snippet = Snippet.objects.get(id=snippet_id)
+        # comments = snippet.comment_set.all()
     except Snippet.DoesNotExist:
         raise  Http404
+
+    context["comment_form"] = CommentForm()
     
     context["snippet"] = snippet
+    # context["comments"] = comments
     return render(request, 'pages/snippet.html', context)
 
 
@@ -83,3 +96,19 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return redirect('/login/')
+
+
+def comment_add(request):
+   if request.method == "POST":
+       snippet_id = request.POST["snippet_id"]
+       comment_form = CommentForm(request.POST)
+       if comment_form.is_valid():
+           comment = comment_form.save(commit=False)
+           comment.author = request.user
+           snippet = Snippet.objects.get(id=snippet_id)
+           comment.snippet = snippet
+           comment.save()
+
+       return redirect(f'/snippet/{snippet_id}')
+
+   raise Http404

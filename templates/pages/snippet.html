@@ -2,7 +2,7 @@
 
 {% block content %}
 <fieldset disabled>
-    <div class="row disabled">
+    <div class="row">
         <div class="col col-8">
             Название: <input type="text" value="{{snippet.name}}" class="form-control">
         </div>
@@ -21,4 +21,23 @@
         </div>
     </div>
  </fieldset>
+ <table border="1">
+    <tr>
+        <th>Автор</th>
+        <th>Комментарий</th>
+    </tr>
+    {% for comment in snippet.comment_set.all %}
+    <tr>
+        <td>{{comment.author.username}}</td>
+        <td>{{comment.text}}</td>
+    </tr>
+    {% endfor %}
+ </table>
+<form action="{% url 'comment_add' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="snippet_id" value="{{snippet.id}}">
+    {{comment_form}}
+    <button type="submit">Добавить</button>
+ </form>
+ 
 {% endblock %}
